@@ -1,12 +1,25 @@
-import { View, Text } from 'react-native'
+import { View, Text, useColorScheme, ColorSchemeName } from 'react-native'
 import React from 'react'
+import { Stack } from 'expo-router'
+import { Colors } from '@/constants/Colors'
 
-const _layout = () => {
+const  RootLayout  = () => {
+
+ const colorScheme: ColorSchemeName = useColorScheme()
+ const theme = Colors[colorScheme ?? "dark"] 
+
   return (
-    <View>
-      <Text>_layout</Text>
-    </View>
+    <Stack screenOptions={{
+      headerStyle: {backgroundColor: theme.navBackground },
+      headerTintColor: theme.title
+    }} >
+
+      <Stack.Screen name='index' options={{title: 'Home'}} />
+      
+
+
+    </Stack>
   )
 }
 
-export default _layout
+export default  RootLayout 

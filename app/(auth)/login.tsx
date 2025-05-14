@@ -8,18 +8,58 @@ import Spacer from '@/components/UI/Spacer'
 import ThemedButton from '@/components/UI/ThemedButton'
 import { Link } from 'expo-router'
 import { Colors } from '@/constants/Colors'
+import Toast from 'react-native-toast-message'
+import { useAuthStore } from "../../store/authStore"
+import {api} from "../../utils/api"
+import {useMutation} from "@tanstack/react-query"
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const login = () => {
 
-     const [email, setEmail] = useState('')
-     const [password, setPassword] = useState('')
+     const [email, setEmail] = useState<string>('')
+     const [password, setPassword] = useState <string> ('')
+
+     const {user, sayHello, setUser, setToken } = useAuthStore();
+
+     const loginMutation = useMutation({
+       mutationFn: async (data : {email: string, password: string}) => {
+        const response = await api.post("/user/login", data);
+        return response.data;
+       },
+       onSuccess: (data: any) => {
+        console.log("Data is : " , data);
+        Toast.show({
+          type: "success",
+          text1: data?.message ?? "Login Successful"
+        });
+
+        setUser(data.data);
+        setToken(data.token)
+
+        const loggedInUser = JSON.stringify(data.token) 
+
+         AsyncStorage.setItem('token', data.token);
+         AsyncStorage.setItem('User', data.data )
+       },
+       onError: (error: any) => {
+        console.log(" Error is : ", error);
+        Toast.show({
+          type: "error",
+          text1: error.response.data.message ?? "Login Failed"
+        })
+       }
+     })
 
     const handleLogin = () => {
         console.log("Login button pressed")
         console.log("Email: ", email)
         console.log("Password: ", password);
+
+        loginMutation.mutate({email: email, password: password})
         
     }
+
+    
 
   return (
     <ThemedView style={[styles.container]}  >
@@ -30,9 +70,10 @@ const login = () => {
 
         <ThemedView  >
           <ThemedLabel  > Email </ThemedLabel>
-            <ThemedInput value={email} setValue={setEmail} placeholder={"Enter your Email"}  type={"email-address"} />
+            <ThemedInput value={email} setValue={setEmail} placeholder={"Enter your Email"}  type={"email-address"}  />
         </ThemedView>
-
+<ThemedText> {user?.name} </ThemedText>
+<ThemedText> {user?.name} </ThemedText>
         <Spacer height={15} />
 
         <ThemedView>

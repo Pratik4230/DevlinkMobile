@@ -8,6 +8,7 @@ import Spacer from '@/components/UI/Spacer'
 import ThemedButton from '@/components/UI/ThemedButton'
 import { Colors } from '@/constants/Colors'
 import { Link } from 'expo-router'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const register = () => {
 
@@ -21,6 +22,12 @@ const register = () => {
         console.log("Email: ", email)
         console.log("Password: ", password);
     }
+
+    const getaToken = async () => {
+     return await AsyncStorage.getItem("token")
+    }
+
+    const token = getaToken();
 
   return (
     <ThemedView  style={styles.container}> 
@@ -37,6 +44,8 @@ const register = () => {
    </ThemedView>
 
    <Spacer height={15} />
+
+   <ThemedText> {token} </ThemedText>
 
     <ThemedView>
       <ThemedLabel> Email </ThemedLabel>

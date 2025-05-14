@@ -1,21 +1,22 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import { Stack } from 'expo-router'
+import { Tabs } from 'expo-router'
 
 const AuthLayout = () => {
   return (
-    <Stack 
+    <Tabs 
         screenOptions={
             {
                 headerShown: false,
+                animation: "none",
                 
-                animation: "simple_push"
+                
             }}
     >
        
-        <Stack.Screen name='register' options={{headerShown: false}} />
-        <Stack.Screen name='login' options={{headerShown: false}} />
-    </Stack>
+        <Tabs.Screen name='register' options={{headerShown: false}} />
+        <Tabs.Screen name='login' options={{headerShown: false}} />
+    </Tabs>
   )
 }
 

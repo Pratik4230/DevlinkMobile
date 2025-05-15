@@ -1,128 +1,131 @@
-import { StyleSheet} from 'react-native'
-import React, { useState } from 'react'
-import ThemedView from '@/components/UI/ThemedView'
-import ThemedText from '@/components/UI/ThemedText'
-import ThemedInput from '@/components/UI/ThemedInput'
-import ThemedLabel from '@/components/UI/ThemedLabel'
-import Spacer from '@/components/UI/Spacer'
-import ThemedButton from '@/components/UI/ThemedButton'
-import { Link } from 'expo-router'
-import { Colors } from '@/constants/Colors'
-import Toast from 'react-native-toast-message'
-import { useAuthStore } from "../../store/authStore"
-import {api} from "../../utils/api"
-import {useMutation} from "@tanstack/react-query"
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+} from 'react-native';
+import React, { useState, useEffect } from 'react';
+import ThemedView from '@/components/UI/ThemedView';
+import ThemedText from '@/components/UI/ThemedText';
+import ThemedInput from '@/components/UI/ThemedInput';
+import ThemedLabel from '@/components/UI/ThemedLabel';
+import Spacer from '@/components/UI/Spacer';
+import ThemedButton from '@/components/UI/ThemedButton';
+import Toast from 'react-native-toast-message';
+import { useAuthStore } from '@/store/authStore';
+import { api } from '@/utils/api';
+import { useMutation } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router } from 'expo-router';
+import { Colors } from '@/constants/Colors';
 
-const login = () => {
+const LoginScreen = () => {
+  const [email, setEmail] = useState('pratik@gmail.com');
+  const [password, setPassword] = useState('Pratik@123');
+  const { user, setUser, setToken } = useAuthStore();
 
-     const [email, setEmail] = useState<string>('pratik@gmail.com')
-     const [password, setPassword] = useState <string> ('Pratik@123')
 
-     const {user, setUser, setToken } = useAuthStore();
+  const loginMutation = useMutation({
+    mutationFn: async (data: { email: string; password: string }) => {
+      const response = await api.post('/user/login', data);
+      return response.data;
+    },
+    onSuccess: async (data: any) => {
+      Toast.show({
+        type: 'success',
+        text1: data?.message ?? 'Login Successful',
+      });
 
-     const loginMutation = useMutation({
-       mutationFn: async (data : {email: string, password: string}) => {
-        const response = await api.post("/user/login", data);
-        return response.data;
-       },
-       onSuccess: (data: any) => {
-   
-        Toast.show({
-          type: "success",
-          text1: data?.message ?? "Login Successful"
-        });
+      setUser(data.data);
+      setToken(data.token);
 
-        setUser(data.data);
-        setToken(data.token)
+      await AsyncStorage.setItem('token', data.token);
+      await AsyncStorage.setItem('user', JSON.stringify(data.data));
 
-        const loggedInUser = JSON.stringify(data.token) 
-
-         AsyncStorage.setItem('token', data.token);
-         AsyncStorage.setItem('user', loggedInUser )
-       },
-       onError: (error: any) => {
-        
-        Toast.show({
-          type: "error",
-          text1: error?.response?.data?.message ?? "Login Failed"
-        })
-       }
-     })
-
-    const handleLogin = () => {
-        
-
-        loginMutation.mutate({email: email, password: password})
-        
-    }
-
-    const getToken = async () => {
-      return await AsyncStorage.getItem("token")
-    }
-
-    
-    const tok = getToken()
+      router.replace('/(tabs)/feed');
+    },
+    onError: (error: any) => {
+      Toast.show({
+        type: 'error',
+        text1: error?.response?.data?.message ?? 'Login Failed',
+      });
+    },
+  });
 
   return (
-    <ThemedView style={[styles.container]}  >
-        <ThemedView style={[styles.innerContainer]} >
-        <ThemedText title={true} style={[styles.headText]} > Welcome Back !!! </ThemedText>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{ flex: 1 }}
+    >
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <ThemedView style={styles.container}>
+          <ThemedText title style={styles.headText}>
+            Welcome Back !!!
+          </ThemedText>
 
-        <Spacer height={40} />
+          <Spacer height={40} />
 
-        <ThemedView  >
-          <ThemedLabel  > Email </ThemedLabel>
-            <ThemedInput value={email} setValue={setEmail} placeholder={"Enter your Email"}  type={"email-address"}  />
+          <ThemedLabel>Email</ThemedLabel>
+          <ThemedInput
+            value={email}
+            setValue={setEmail}
+            placeholder="Enter your Email"
+            type="email-address"
+          />
+
+          <Spacer height={15} />
+
+          <ThemedLabel>Password</ThemedLabel>
+          <ThemedInput
+            value={password}
+            setValue={setPassword}
+            placeholder="Enter your Password"
+            type="password"
+          />
+
+          <Spacer height={40} />
+
+          <ThemedButton
+            content="Login"
+            onPressed={() => loginMutation.mutate({ email, password })}
+            isPending={loginMutation.isPending}
+          />
+
+          <Spacer height={20} />
+
+          <ThemedText style={styles.centerText}>
+            Don’t have an account?{' '}
+            <ThemedText
+              style={styles.linkText}
+              onPress={() => router.replace('/register')}
+            >
+              Sign Up Now
+            </ThemedText>
+          </ThemedText>
         </ThemedView>
-<ThemedText> {user?.name} </ThemedText>
-<ThemedText> {user?.name} </ThemedText>
-        <Spacer height={15} />
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
+};
 
-        <ThemedView>
-          <ThemedLabel  > Password </ThemedLabel>
-            <ThemedInput value={password} setValue={setPassword} placeholder={"Enter your Password"} type={"password"}  />
-        </ThemedView>
-
-        <Spacer height={40} />
-
-        <ThemedText> {tok} </ThemedText>
-
-     <ThemedButton content='Login' onPressed={handleLogin} isPending={loginMutation.isPending} />
-
-     <Spacer height={20} />
-     <ThemedText style={{textAlign: 'center'}} > Don't have an account? <Link href={"/register"} > <ThemedText style={{ color: Colors.blue400, padding:30 }} > Sign Up Now </ThemedText> </Link>  </ThemedText>
-
-        </ThemedView>
-       
-    </ThemedView>
-  )
-}
-
-export default login
+export default LoginScreen;
 
 const styles = StyleSheet.create({
-
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-    },
-
-    innerContainer: {
-        padding: 20,
-        marginHorizontal: 20,
-        
-    },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 20,
     
-    headText: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        
-        textAlign: 'center',
-        padding: 10, 
-      },
-    
-      
-    
-
-})
+  },
+  headText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  centerText: {
+    textAlign: 'center',
+  },
+  linkText: {
+    color: Colors.blue400,
+  },
+});

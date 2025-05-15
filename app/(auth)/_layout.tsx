@@ -1,25 +1,6 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
-import { Tabs } from 'expo-router'
+// app/(auth)/_layout.tsx
+import { Slot } from 'expo-router';
 
-const AuthLayout = () => {
-  return (
-    <Tabs 
-        screenOptions={
-            {
-                headerShown: false,
-                animation: "none",
-                
-                
-            }}
-    >
-       
-        <Tabs.Screen name='register' options={{headerShown: false}} />
-        <Tabs.Screen name='login' options={{headerShown: false}} />
-    </Tabs>
-  )
+export default function AuthLayout() {
+  return <Slot   />;
 }
-
-export default AuthLayout
-
-const styles = StyleSheet.create({})

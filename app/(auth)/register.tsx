@@ -18,11 +18,11 @@ import { api } from '@/utils/api';
 import Toast from 'react-native-toast-message';
 import { useAuthStore } from '@/store/authStore';
 import { router } from 'expo-router';
-import { useAuthRedirect } from '@/hooks/useAuthRedirect';
+// import { useAuthRedirect } from '@/hooks/useAuthRedirect';
 
 const RegisterScreen = () => {
 
-    useAuthRedirect();
+    // useAuthRedirect();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');

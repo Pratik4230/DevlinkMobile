@@ -7,7 +7,7 @@ export function useAuthRedirect() {
 
   useEffect(() => {
     if (user && token) {
-      // User is logged in, redirect to Feed or main tab
+      // If user is already authenticated, immediately redirect to main feed
       router.replace('/(tabs)/feed');
     }
   }, [user, token]);

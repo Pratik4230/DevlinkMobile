@@ -18,16 +18,24 @@ import { useMutation } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { Colors } from '@/constants/Colors';
-import { useAuthRedirect } from '@/hooks/useAuthRedirect';
+// import { useAuthRedirect } from '@/hooks/useAuthRedirect';
 
 const login = () => {
 
-    useAuthRedirect();
+      // useAuthRedirect();
+
+  
 
   const [email, setEmail] = useState('pratik@gmail.com');
   const [password, setPassword] = useState('Pratik@123');
   const { user, setUser, setToken } = useAuthStore();
 
+setTimeout(() => {
+   if (user.email) {
+    router.replace("/(tabs)/feed")
+  }
+},0 )
+ 
 
   const loginMutation = useMutation({
     mutationFn: async (data: { email: string; password: string }) => {

@@ -1,5 +1,3 @@
-// app/_layout.tsx
-
 import { Stack } from 'expo-router';
 import { useColorScheme, ColorSchemeName } from 'react-native';
 import { Colors } from '@/constants/Colors';
@@ -10,6 +8,7 @@ import React from 'react';
 const RootLayout = () => {
   const colorScheme: ColorSchemeName = useColorScheme();
   const theme = Colors[colorScheme ?? 'dark'];
+
   const queryClient = new QueryClient();
 
   return (
@@ -19,6 +18,7 @@ const RootLayout = () => {
           headerShown: false,
         }}
       >
+        {/* Stack order matters: auth routes first, then main tabs */}
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="(tabs)" />
       </Stack>

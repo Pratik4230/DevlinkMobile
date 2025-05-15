@@ -16,10 +16,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const login = () => {
 
-     const [email, setEmail] = useState<string>('')
-     const [password, setPassword] = useState <string> ('')
+     const [email, setEmail] = useState<string>('pratik@gmail.com')
+     const [password, setPassword] = useState <string> ('Pratik@123')
 
-     const {user, sayHello, setUser, setToken } = useAuthStore();
+     const {user, setUser, setToken } = useAuthStore();
 
      const loginMutation = useMutation({
        mutationFn: async (data : {email: string, password: string}) => {
@@ -27,7 +27,7 @@ const login = () => {
         return response.data;
        },
        onSuccess: (data: any) => {
-        console.log("Data is : " , data);
+   
         Toast.show({
           type: "success",
           text1: data?.message ?? "Login Successful"
@@ -39,31 +39,34 @@ const login = () => {
         const loggedInUser = JSON.stringify(data.token) 
 
          AsyncStorage.setItem('token', data.token);
-         AsyncStorage.setItem('User', data.data )
+         AsyncStorage.setItem('user', loggedInUser )
        },
        onError: (error: any) => {
-        console.log(" Error is : ", error);
+        
         Toast.show({
           type: "error",
-          text1: error.response.data.message ?? "Login Failed"
+          text1: error?.response?.data?.message ?? "Login Failed"
         })
        }
      })
 
     const handleLogin = () => {
-        console.log("Login button pressed")
-        console.log("Email: ", email)
-        console.log("Password: ", password);
+        
 
         loginMutation.mutate({email: email, password: password})
         
     }
 
+    const getToken = async () => {
+      return await AsyncStorage.getItem("token")
+    }
+
     
+    const tok = getToken()
 
   return (
     <ThemedView style={[styles.container]}  >
-        <ThemedView  style={[styles.innerContainer]} >
+        <ThemedView style={[styles.innerContainer]} >
         <ThemedText title={true} style={[styles.headText]} > Welcome Back !!! </ThemedText>
 
         <Spacer height={40} />
@@ -83,7 +86,9 @@ const login = () => {
 
         <Spacer height={40} />
 
-     <ThemedButton content='Login' onPressed={handleLogin} />
+        <ThemedText> {tok} </ThemedText>
+
+     <ThemedButton content='Login' onPressed={handleLogin} isPending={loginMutation.isPending} />
 
      <Spacer height={20} />
      <ThemedText style={{textAlign: 'center'}} > Don't have an account? <Link href={"/register"} > <ThemedText style={{ color: Colors.blue400, padding:30 }} > Sign Up Now </ThemedText> </Link>  </ThemedText>
@@ -106,7 +111,7 @@ const styles = StyleSheet.create({
     innerContainer: {
         padding: 20,
         marginHorizontal: 20,
-        backgroundColor: '#0c0a09',
+        
     },
     
     headText: {

@@ -1,18 +1,26 @@
 export const Colors = {
-  primary: "#6849a7",
-  warning: "#cc475a",
+  
+
+  // Blue
   blue500: "#3b82f6",
   blue400: "#60a5fa",
+
+
+  blue50: "#eff6ff",
+
+
+
+   
 
   dark: {
     text: "#d4d4d4",
     title: "#fff",
-    background: "#020617",
-    navBackground: "#201e2b",
+    background: "black",
+    navBackground: "green",
     iconColor: "#9591a5",
     iconColorFocused: "#fff",
-    uiBackground: "#2f2b3d",
-    inputBackground: '#222',
+    uiBackground: "#020617",
+    inputBackground: '#171717',
     border: '#444',
     placeholder: '#666',
     

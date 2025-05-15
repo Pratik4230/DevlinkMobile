@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet} from 'react-native'
 import React, { useState } from 'react'
 import ThemedView from '@/components/UI/ThemedView'
 import ThemedText from '@/components/UI/ThemedText'
@@ -9,6 +9,10 @@ import ThemedButton from '@/components/UI/ThemedButton'
 import { Colors } from '@/constants/Colors'
 import { Link } from 'expo-router'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useMutation } from '@tanstack/react-query'
+import { api } from '@/utils/api'
+import Toast from 'react-native-toast-message'
+import { useAuthStore } from '@/store/authStore'
 
 const register = () => {
 
@@ -16,20 +20,56 @@ const register = () => {
     const [email, setEmail] = useState<string>("")
     const [password, setPassword] = useState<string>("")
 
+    const  { user, setUser, setToken } = useAuthStore();
+ 
+    const signupMutation = useMutation({
+      mutationFn: async (data : { fullname: string, email: string, password: string }) => {
+        const response = await api.post("/user/register" , data);
+        return response.data;
+      },
+      onSuccess: (data: any) => {
+        console.log("Sign up data is : ", data);
+        Toast.show({
+          type: 'success',
+          text1: data.message ?? "Registerd Successfully",
+        });
+
+        setUser(data?.data);
+        setToken(data?.token)
+
+        const loggedInUser = JSON.stringify(data.data)
+        AsyncStorage.setItem("token", data?.token)
+        AsyncStorage.setItem("user", loggedInUser)
+
+      },
+      onError: (error: any) => {
+        console.log("Sign up Error : ", error);
+        Toast.show({
+          type: "error",
+          text1: error?.response?.data?.message ?? "Registration Failed!",
+        
+        })
+        
+      }
+    })
+
     const handleRegister = () => {
         console.log("Register button pressed")
         console.log("Name: ", name)
         console.log("Email: ", email)
         console.log("Password: ", password);
+
+        signupMutation.mutate({email: email, fullname: name, password: password})
     }
 
-    const getaToken = async () => {
-     return await AsyncStorage.getItem("token")
-    }
+ 
 
-    const token = getaToken();
+  
 
   return (
+    <KeyboardAvoidingView   behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+  style={{ flex: 1 }} >
+
     <ThemedView  style={styles.container}> 
       
 
@@ -45,7 +85,7 @@ const register = () => {
 
    <Spacer height={15} />
 
-   <ThemedText> {token} </ThemedText>
+  
 
     <ThemedView>
       <ThemedLabel> Email </ThemedLabel>
@@ -62,7 +102,7 @@ const register = () => {
 
 <Spacer height={40} />
 
-  <ThemedButton content='Register' onPressed={handleRegister} />
+  <ThemedButton content='Register' onPressed={handleRegister} isPending={signupMutation.isPending} />
   <Spacer height={20} />
 
   <ThemedText style={{textAlign: 'center'}} > Already have an account? <Link href={"/login"} > <ThemedText style={{ color: Colors.blue400, padding:30 }} > Login Now </ThemedText> </Link>  </ThemedText>
@@ -70,6 +110,8 @@ const register = () => {
  </ThemedView>
 
     </ThemedView>
+  
+    </KeyboardAvoidingView>
   )
 }
 

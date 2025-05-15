@@ -20,7 +20,7 @@ const ThemedInput = ({ style, value, setValue, placeholder, type, ...props }: an
         onChangeText={setValue}
         placeholder={placeholder}
         keyboardType={type}
-        secureTextEntry={type === 'password'}
+        secureTextEntry={type == 'password'}
         
         
     />

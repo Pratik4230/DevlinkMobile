@@ -6,7 +6,7 @@ const  TabsLayout  = () => {
   return (
     <Tabs>
         <Tabs.Screen name='feed' options={{}} />
-                <Tabs.Screen name='connections' options={{}} />
+                <Tabs.Screen name='connection' options={{}} />
                         <Tabs.Screen name='jobs' options={{}} />
                                 <Tabs.Screen name='chat' options={{}} />
     </Tabs>

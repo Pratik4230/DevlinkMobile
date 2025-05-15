@@ -18,8 +18,12 @@ import { useMutation } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { Colors } from '@/constants/Colors';
+import { useAuthRedirect } from '@/hooks/useAuthRedirect';
 
-const LoginScreen = () => {
+const login = () => {
+
+    useAuthRedirect();
+
   const [email, setEmail] = useState('pratik@gmail.com');
   const [password, setPassword] = useState('Pratik@123');
   const { user, setUser, setToken } = useAuthStore();
@@ -108,7 +112,7 @@ const LoginScreen = () => {
   );
 };
 
-export default LoginScreen;
+export default login;
 
 const styles = StyleSheet.create({
   container: {
